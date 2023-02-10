@@ -21,7 +21,7 @@ public class Lwjgl3Launcher {
         configuration.setTitle("OpenWorld");
         configuration.useVsync(true);
         configuration.setForegroundFPS(Lwjgl3ApplicationConfiguration.getDisplayMode().refreshRate);
-        configuration.setWindowedMode(640, 480);
+        configuration.setWindowedMode(LKGame.WIDTH, LKGame.HEIGHT);
         configuration.setWindowIcon("libgdx128.png", "libgdx64.png", "libgdx32.png", "libgdx16.png");
         return configuration;
     }

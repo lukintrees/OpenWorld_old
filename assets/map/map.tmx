@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="left-up" width="50" height="40" tilewidth="16" tileheight="16" infinite="0" nextlayerid="3" nextobjectid="1">
  <properties>
-  <property name="spawnX" type="int" value="9"/>
-  <property name="spawnY" type="int" value="11"/>
+  <property name="spawnX" type="int" value="4"/>
+  <property name="spawnY" type="int" value="35"/>
  </properties>
  <tileset firstgid="1" source="0x72_DungeonTilesetII_v1.tsx"/>
  <layer id="1" name="layer1" width="50" height="40">

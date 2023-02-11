@@ -3,11 +3,15 @@ package com.lukin.openworld;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.lukin.openworld.actors.Character;
@@ -33,9 +37,15 @@ public class LKGame extends ApplicationAdapter {
         mapRenderer.setView(camera.combined, 0, 0, WIDTH + 16f, HEIGHT + 16f);
         stage = new Stage(viewport, batch);
         Gdx.input.setInputProcessor(stage);
-        Character character = new Character();
+        Touchpad touchpad = new Touchpad(10, new Touchpad.TouchpadStyle(new TextureRegionDrawable(new Texture(Gdx.files.internal("JoystickResized.png"))),
+                new TextureRegionDrawable(new Texture(Gdx.files.internal("KnobResized.png")))));
+        Character character = new Character(touchpad, camera, true);
         character.setBounds(map.getProperties().get("spawnX", Integer.class) * 16, (40 - map.getProperties().get("spawnY", Integer.class)) * 16, 16, 16);
+        Vector3 touchpadPos = camera.unproject(new Vector3(0, WIDTH - 200, 0));
+        System.out.println(touchpadPos);
+        touchpad.setPosition(touchpadPos.x, touchpadPos.y);
         stage.addActor(character);
+        stage.addActor(touchpad);
     }
 
     @Override

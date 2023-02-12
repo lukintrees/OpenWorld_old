@@ -2,10 +2,12 @@ package com.lukin.openworld;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
@@ -39,11 +41,11 @@ public class LKGame extends ApplicationAdapter {
         Gdx.input.setInputProcessor(stage);
         Touchpad touchpad = new Touchpad(10, new Touchpad.TouchpadStyle(new TextureRegionDrawable(new Texture(Gdx.files.internal("JoystickResized.png"))),
                 new TextureRegionDrawable(new Texture(Gdx.files.internal("KnobResized.png")))));
-        Character character = new Character(touchpad, camera, true);
+        Character character = new Character(touchpad, camera, true, (TiledMapTileLayer) map.getLayers().get("layer1"));
         character.setBounds(map.getProperties().get("spawnX", Integer.class) * 16, (40 - map.getProperties().get("spawnY", Integer.class)) * 16, 16, 16);
-        Vector3 touchpadPos = camera.unproject(new Vector3(0, WIDTH - 200, 0));
+        Vector3 touchpadPos = camera.unproject(new Vector3(0, HEIGHT, 0));
         System.out.println(touchpadPos);
-        touchpad.setPosition(touchpadPos.x, touchpadPos.y);
+        touchpad.setPosition(touchpadPos.x + 10, touchpadPos.y + 10);
         stage.addActor(character);
         stage.addActor(touchpad);
     }
@@ -53,9 +55,23 @@ public class LKGame extends ApplicationAdapter {
         ScreenUtils.clear(0, 0, 0, 0);
         camera.update();
         batch.setProjectionMatrix(camera.combined);
+        batch.begin();
+        batch.end();
         mapRenderer.render();
         stage.act();
         stage.draw();
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            camera.translate(-3, 0, 0);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            camera.translate(3, 0, 0);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+            camera.translate(0, -3, 0);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+            camera.translate(0, 3, 0);
+        }
     }
 
     @Override

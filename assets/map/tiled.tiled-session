@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "map.tmx",
+    "activeFile": "0x72_DungeonTilesetII_v1.tsx",
     "expandedProjectPaths": [
         "."
     ],
@@ -48,8 +48,8 @@
     "project": "tiled.tiled-project",
     "property.type": "int",
     "recentFiles": [
-        "0x72_DungeonTilesetII_v1.tsx",
         "map.tmx",
+        "0x72_DungeonTilesetII_v1.tsx",
         "map1.tmx",
         "0x72_DungeonTilesetII_v2.tsx"
     ],

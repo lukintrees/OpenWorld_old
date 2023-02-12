@@ -11,7 +11,6 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
-
 import java.util.HashMap;
 
 public class Character extends Actor {
@@ -24,7 +23,7 @@ public class Character extends Actor {
     public Rectangle hitbox;
     private boolean skipMove = true;
     public static final boolean DEBUG = false;
-    private HashMap<TiledMapTileLayer.Cell, Rectangle> tilesHitbox;
+    private HashMap<Rectangle, TiledMapTileLayer.Cell> tilesHitbox;
     private Texture hitboxTexture;
     private Texture hitboxTexture2;
     private BitmapFont debugFont;
@@ -37,7 +36,7 @@ public class Character extends Actor {
         texture = new Texture(pixmap);
         hitbox = new Rectangle(0, 0, 16, 16);
         if (DEBUG) {
-            tilesHitbox = new HashMap<>(9);
+            tilesHitbox = new HashMap<>(25);
             pixmap.setColor(Color.RED);
             pixmap.drawRectangle(0, 0, 16, 16);
             hitboxTexture = new Texture(pixmap);
@@ -55,11 +54,11 @@ public class Character extends Actor {
     @Override
     public void draw(Batch batch, float parentAlpha) {
         if (DEBUG) {
-            for (HashMap.Entry<TiledMapTileLayer.Cell, Rectangle> entry : tilesHitbox.entrySet()) {
-                if (entry.getKey() == null) {
-                    batch.draw(hitboxTexture, entry.getValue().x, entry.getValue().y, entry.getValue().width, entry.getValue().height);
+            for (HashMap.Entry<Rectangle, TiledMapTileLayer.Cell> entry : tilesHitbox.entrySet()) {
+                if (entry.getValue() == null) {
+                    batch.draw(hitboxTexture, entry.getKey().x, entry.getKey().y, entry.getKey().width, entry.getKey().height);
                 } else {
-                    batch.draw(hitboxTexture2, entry.getValue().x, entry.getValue().y, entry.getValue().width, entry.getValue().height);
+                    batch.draw(hitboxTexture2, entry.getKey().x, entry.getKey().y, entry.getKey().width, entry.getKey().height);
                 }
             }
         }
@@ -72,7 +71,7 @@ public class Character extends Actor {
         super.act(delta);
         float x = SPEED * delta * touchpad.getKnobPercentX();
         float y = SPEED * delta * touchpad.getKnobPercentY();
-        hitbox.setPosition(getX(), getY());
+        hitbox.setPosition(getX() + x, getY() + y);
         skipMove = checkPosition(x, y);
         if (!skipMove) {
             moveBy(x, y);
@@ -95,13 +94,13 @@ public class Character extends Actor {
             tilesHitbox.clear();
         }
         Vector2 pos = localToStageCoordinates(new Vector2(addX, addY));
-        pos.sub(pos.x % 16, pos.y % 16);
-        for (int i = -1; i < 2; i++) {
-            for (int j = -1; j < 2; j++) {
-                TiledMapTileLayer.Cell cell = layer.getCell((int) (pos.x / 16 + i), (int) (pos.y / 16 + j));
-                Rectangle rect = new Rectangle((int) (pos.x + i * 16), (int) (pos.y + j * 16), 16, 16);
+        pos.set(pos.x / 16, pos.y / 16);
+        for (int i = -2; i < 3; i++) {
+            for (int j = -2; j < 3; j++) {
+                TiledMapTileLayer.Cell cell = layer.getCell((int) pos.x + i, (int) (pos.y + j));
+                Rectangle rect = new Rectangle((int) (pos.x + i) * 16, (int) (pos.y + j) * 16, 16, 16);
                 if (DEBUG) {
-                    tilesHitbox.put(cell, rect);
+                    tilesHitbox.put(rect, cell);
                 }
                 if (cell == null) {
                     if (hitbox.overlaps(rect)) {

@@ -38,16 +38,8 @@ public class LKGame extends ApplicationAdapter {
         mapRenderer = new OrthogonalTiledMapRenderer(map, batch);
         mapRenderer.setView(camera.combined, 0, 0, WIDTH + 16f, HEIGHT + 16f);
         stage = new Stage(viewport, batch);
+        addActors(stage);
         Gdx.input.setInputProcessor(stage);
-        Touchpad touchpad = new Touchpad(10, new Touchpad.TouchpadStyle(new TextureRegionDrawable(new Texture(Gdx.files.internal("JoystickResized.png"))),
-                new TextureRegionDrawable(new Texture(Gdx.files.internal("KnobResized.png")))));
-        Character character = new Character(touchpad, camera, true, (TiledMapTileLayer) map.getLayers().get("layer1"));
-        character.setBounds(map.getProperties().get("spawnX", Integer.class) * 16, (40 - map.getProperties().get("spawnY", Integer.class)) * 16, 16, 16);
-        Vector3 touchpadPos = camera.unproject(new Vector3(0, HEIGHT, 0));
-        System.out.println(touchpadPos);
-        touchpad.setPosition(touchpadPos.x + 10, touchpadPos.y + 10);
-        stage.addActor(character);
-        stage.addActor(touchpad);
     }
 
     @Override
@@ -72,6 +64,22 @@ public class LKGame extends ApplicationAdapter {
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
             camera.translate(0, 3, 0);
         }
+        if (Gdx.input.isKeyPressed(Input.Keys.R)) {
+            stage.clear();
+            addActors(stage);
+        }
+    }
+
+    public void addActors(Stage stage) {
+        TiledMap map = mapRenderer.getMap();
+        Touchpad touchpad = new Touchpad(10, new Touchpad.TouchpadStyle(new TextureRegionDrawable(new Texture(Gdx.files.internal("JoystickResized.png"))),
+                new TextureRegionDrawable(new Texture(Gdx.files.internal("KnobResized.png")))));
+        Character character = new Character(touchpad, camera, true, (TiledMapTileLayer) map.getLayers().get("layer1"));
+        character.setBounds(map.getProperties().get("spawnX", Integer.class) * 16, (40 - map.getProperties().get("spawnY", Integer.class)) * 16, 16, 16);
+        Vector3 touchpadPos = camera.unproject(new Vector3(0, HEIGHT, 0));
+        touchpad.setPosition(touchpadPos.x + 10, touchpadPos.y + 10);
+        stage.addActor(character);
+        stage.addActor(touchpad);
     }
 
     @Override

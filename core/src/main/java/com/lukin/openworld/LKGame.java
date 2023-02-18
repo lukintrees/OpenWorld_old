@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
@@ -17,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.lukin.openworld.actors.Character;
+import com.lukin.openworld.utils.EntityLoader;
 
 
 public class LKGame extends ApplicationAdapter {
@@ -38,7 +38,7 @@ public class LKGame extends ApplicationAdapter {
         mapRenderer = new OrthogonalTiledMapRenderer(map, batch);
         mapRenderer.setView(camera.combined, 0, 0, WIDTH + 16f, HEIGHT + 16f);
         stage = new Stage(viewport, batch);
-        addActors(stage);
+        addActors();
         Gdx.input.setInputProcessor(stage);
     }
 
@@ -47,8 +47,6 @@ public class LKGame extends ApplicationAdapter {
         ScreenUtils.clear(0, 0, 0, 0);
         camera.update();
         batch.setProjectionMatrix(camera.combined);
-        batch.begin();
-        batch.end();
         mapRenderer.render();
         stage.act();
         stage.draw();
@@ -66,15 +64,16 @@ public class LKGame extends ApplicationAdapter {
         }
         if (Gdx.input.isKeyPressed(Input.Keys.R)) {
             stage.clear();
-            addActors(stage);
+            addActors();
         }
     }
 
-    public void addActors(Stage stage) {
+    public void addActors() {
         TiledMap map = mapRenderer.getMap();
         Touchpad touchpad = new Touchpad(10, new Touchpad.TouchpadStyle(new TextureRegionDrawable(new Texture(Gdx.files.internal("JoystickResized.png"))),
                 new TextureRegionDrawable(new Texture(Gdx.files.internal("KnobResized.png")))));
-        Character character = new Character(touchpad, camera, true, (TiledMapTileLayer) map.getLayers().get("layer1"));
+        EntityLoader loader = new EntityLoader();
+        Character character = new Character(touchpad, map, camera, loader.getEntities().get(0).animation);
         character.setBounds(map.getProperties().get("spawnX", Integer.class) * 16, (40 - map.getProperties().get("spawnY", Integer.class)) * 16, 16, 16);
         Vector3 touchpadPos = camera.unproject(new Vector3(0, HEIGHT, 0));
         touchpad.setPosition(touchpadPos.x + 10, touchpadPos.y + 10);

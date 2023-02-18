@@ -4,36 +4,34 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
-import java.util.HashMap;
 
-public class Character extends Actor {
+import java.util.HashMap;
+import java.util.Map;
+
+public class Character extends Entity {
     public static final int SPEED = 100;
-    public Texture texture;
-    public Touchpad touchpad;
-    public OrthographicCamera camera;
-    public boolean centerCamera;
-    public TiledMapTileLayer layer;
-    public Rectangle hitbox;
-    private boolean skipMove = true;
     public static final boolean DEBUG = false;
+    private Touchpad touchpad;
+    private OrthographicCamera camera;
+    private Animation<Texture> animation;
+    private TiledMapTileLayer layer;
     private HashMap<Rectangle, TiledMapTileLayer.Cell> tilesHitbox;
+    private boolean centerCamera;
+    private boolean direction;
+    private float animationTime;
     private Texture hitboxTexture;
     private Texture hitboxTexture2;
-    private BitmapFont debugFont;
 
 
-    public Character(Touchpad touchpad, OrthographicCamera camera, boolean centerCamera, TiledMapTileLayer layer) {
+    public Character(Touchpad touchpad, TiledMap map, OrthographicCamera camera, int[][][] animationTiles) {
         Pixmap pixmap = new Pixmap(16, 16, Pixmap.Format.RGBA8888);
-        pixmap.setColor(Color.BLUE);
-        pixmap.drawRectangle(0, 0, 16, 16);
-        texture = new Texture(pixmap);
         hitbox = new Rectangle(0, 0, 16, 16);
         if (DEBUG) {
             tilesHitbox = new HashMap<>(25);
@@ -45,16 +43,18 @@ public class Character extends Actor {
             hitboxTexture2 = new Texture(pixmap);
         }
         pixmap.dispose();
+        this.animation = loadAnimation(animationTiles, map.getTileSets(), 0.25f);
+        this.animationTime = 0f;
         this.touchpad = touchpad;
         this.camera = camera;
-        this.centerCamera = centerCamera;
-        this.layer = layer;
+        this.centerCamera = true;
+        this.layer = (TiledMapTileLayer) map.getLayers().get("layer1");
     }
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
         if (DEBUG) {
-            for (HashMap.Entry<Rectangle, TiledMapTileLayer.Cell> entry : tilesHitbox.entrySet()) {
+            for (Map.Entry<Rectangle, TiledMapTileLayer.Cell> entry : tilesHitbox.entrySet()) {
                 if (entry.getValue() == null) {
                     batch.draw(hitboxTexture, entry.getKey().x, entry.getKey().y, entry.getKey().width, entry.getKey().height);
                 } else {
@@ -62,29 +62,32 @@ public class Character extends Actor {
                 }
             }
         }
-        batch.draw(texture, getX(), getY(), getOriginX(), getOriginY(), getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation(), 0, 0,
-                texture.getWidth(), texture.getHeight(), false, false);
+        Texture texture = animation.getKeyFrame(animationTime, true);
+        batch.draw(texture, getX(), getY(), getOriginX(), getOriginY(), 16, 32, getScaleX(), getScaleY(), getRotation(), 0, 0,
+                texture.getWidth(), texture.getHeight(), direction, false);
     }
 
     @Override
     public void act(float delta) {
         super.act(delta);
+        animationTime += delta;
         float x = SPEED * delta * touchpad.getKnobPercentX();
         float y = SPEED * delta * touchpad.getKnobPercentY();
         hitbox.setPosition(getX() + x, getY() + y);
-        skipMove = checkPosition(x, y);
+        boolean skipMove = checkPosition(x, y);
         if (!skipMove) {
             moveBy(x, y);
             touchpad.moveBy(x, y);
             camera.translate(x, y);
+            direction = x < 0;
         }
     }
 
     @Override
     protected void positionChanged() {
         if (centerCamera) {
-            camera.position.x = getX() + texture.getWidth();
-            camera.position.y = getY() + texture.getHeight();
+            camera.position.x = getX() + 16;
+            camera.position.y = getY() + 16;
             camera.update();
         }
     }

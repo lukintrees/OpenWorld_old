@@ -10,13 +10,19 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
 public class Entity extends Actor {
-    public Rectangle hitbox;
+    public static final int SPEED = 100;
+    Rectangle hitbox;
+    Animation<Texture> animation;
+    float animationTime;
+
+    public Entity(){
+        animationTime = 0f;
+        hitbox = new Rectangle();
+    }
 
     public Animation<Texture> loadAnimation(int[][][] tilesID, TiledMapTileSets tileSets, float frameDuration) {
         Texture[] frames = new Texture[tilesID.length];
-
         Pixmap tileSetPixmap = getPixmapFromTileSet(tileSets);
-
         for (int i = 0; i < tilesID.length; i++) {
             if (tilesID[i].length == 1) {
                 if (tilesID[i][0].length == 1) {
@@ -28,9 +34,7 @@ public class Entity extends Actor {
                 frames[i] = get2DTilesTexture(tilesID[i], tileSets, tileSetPixmap);
             }
         }
-
-        Animation<Texture> animation = new Animation<>(frameDuration, frames);
-        return animation;
+        return new Animation<>(frameDuration, frames);
     }
 
     private Pixmap getPixmapFromTileSet(TiledMapTileSets tileSets) {
@@ -57,6 +61,6 @@ public class Entity extends Actor {
 
     private Texture get2DTilesTexture(int[][] tilesID, TiledMapTileSets tileSets, Pixmap tileSetPixmap) {
         //TODO: Draw 2 dimensional textures
-        throw new UnsupportedOperationException("Method not implemented yet");
+        throw new UnsupportedOperationException("Метод ещё не имплемитирован");
     }
 }

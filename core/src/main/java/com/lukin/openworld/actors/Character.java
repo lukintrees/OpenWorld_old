@@ -4,37 +4,32 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
-
+import com.lukin.openworld.LKGame;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Character extends Entity {
-    public static final int SPEED = 100;
-    public static final boolean DEBUG = false;
     private Touchpad touchpad;
     private OrthographicCamera camera;
-    private Animation<Texture> animation;
     private TiledMapTileLayer layer;
     private HashMap<Rectangle, TiledMapTileLayer.Cell> tilesHitbox;
     private boolean centerCamera;
     private boolean direction;
-    private float animationTime;
-    private float idleTime;
     private Texture hitboxTexture;
     private Texture hitboxTexture2;
 
 
     public Character(Touchpad touchpad, TiledMap map, OrthographicCamera camera, int[][][] animationTiles) {
+        super();
         Pixmap pixmap = new Pixmap(16, 16, Pixmap.Format.RGBA8888);
         hitbox = new Rectangle(0, 0, 16, 14);
-        if (DEBUG) {
+        if (LKGame.DEBUG) {
             tilesHitbox = new HashMap<>(25);
             pixmap.setColor(Color.RED);
             pixmap.drawRectangle(0, 0, 16, 16);
@@ -45,8 +40,6 @@ public class Character extends Entity {
         }
         pixmap.dispose();
         this.animation = loadAnimation(animationTiles, map.getTileSets(), 0.25f);
-        this.animationTime = 0f;
-        this.idleTime = 0f;
         this.touchpad = touchpad;
         this.camera = camera;
         this.centerCamera = true;
@@ -55,7 +48,7 @@ public class Character extends Entity {
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        if (DEBUG) {
+        if (LKGame.DEBUG) {
             for (Map.Entry<Rectangle, TiledMapTileLayer.Cell> entry : tilesHitbox.entrySet()) {
                 if (entry.getValue() == null) {
                     batch.draw(hitboxTexture, entry.getKey().x, entry.getKey().y, entry.getKey().width, entry.getKey().height);
@@ -72,7 +65,6 @@ public class Character extends Entity {
     @Override
     public void act(float delta) {
         super.act(delta);
-        animationTime += delta;
         float x = SPEED * delta * touchpad.getKnobPercentX();
         float y = SPEED * delta * touchpad.getKnobPercentY();
         hitbox.setPosition(getX() + x, getY() + y);
@@ -83,10 +75,9 @@ public class Character extends Entity {
                 touchpad.moveBy(x, y);
                 camera.translate(x, y);
                 direction = x < 0;
-                idleTime = 0;
             }
+            animationTime += delta;
         }else{
-            idleTime += delta;
             animationTime = 0f;
         }
     }
@@ -101,7 +92,7 @@ public class Character extends Entity {
     }
 
     public boolean checkPosition(float addX, float addY) {
-        if (DEBUG) {
+        if (LKGame.DEBUG) {
             tilesHitbox.clear();
         }
         Vector2 pos = localToStageCoordinates(new Vector2(addX, addY));
@@ -110,7 +101,7 @@ public class Character extends Entity {
             for (int j = -2; j < 3; j++) {
                 TiledMapTileLayer.Cell cell = layer.getCell((int) pos.x + i, (int) (pos.y + j));
                 Rectangle rect = new Rectangle((int) (pos.x + i) * 16, (int) (pos.y + j) * 16, 16, 16);
-                if (DEBUG) {
+                if (LKGame.DEBUG) {
                     tilesHitbox.put(rect, cell);
                 }
                 if (cell == null) {

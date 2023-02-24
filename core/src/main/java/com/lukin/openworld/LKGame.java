@@ -22,6 +22,7 @@ import com.lukin.openworld.utils.EntityLoader;
 public class LKGame extends ApplicationAdapter {
     public static final int WIDTH = 800;
     public static final int HEIGHT = 600;
+    public static final boolean DEBUG = false;
     private SpriteBatch batch;
     private OrthographicCamera camera;
     private FitViewport viewport;

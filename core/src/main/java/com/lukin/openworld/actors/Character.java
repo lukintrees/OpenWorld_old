@@ -11,6 +11,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.lukin.openworld.LKGame;
+import com.lukin.openworld.utils.EntityLoader;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,10 +27,9 @@ public class Character extends Entity {
     private Texture hitboxTexture2;
 
 
-    public Character(Touchpad touchpad, TiledMap map, OrthographicCamera camera, int[][][] animationTiles) {
-        super();
+    public Character(Touchpad touchpad, TiledMap map, OrthographicCamera camera, EntityLoader.EntityJson entityJson) {
         Pixmap pixmap = new Pixmap(16, 16, Pixmap.Format.RGBA8888);
-        hitbox = new Rectangle(0, 0, 16, 14);
+        hitbox.set(0, 0, 16, 14);
         if (LKGame.DEBUG) {
             tilesHitbox = new HashMap<>(25);
             pixmap.setColor(Color.RED);
@@ -39,7 +40,7 @@ public class Character extends Entity {
             hitboxTexture2 = new Texture(pixmap);
         }
         pixmap.dispose();
-        this.animation = loadAnimation(animationTiles, map.getTileSets(), 0.25f);
+        this.animation = loadAnimation(entityJson.animation, map.getTileSets(), 0.25f);
         this.touchpad = touchpad;
         this.camera = camera;
         this.centerCamera = true;

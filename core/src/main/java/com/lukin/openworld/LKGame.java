@@ -74,7 +74,7 @@ public class LKGame extends ApplicationAdapter {
         Touchpad touchpad = new Touchpad(10, new Touchpad.TouchpadStyle(new TextureRegionDrawable(new Texture(Gdx.files.internal("JoystickResized.png"))),
                 new TextureRegionDrawable(new Texture(Gdx.files.internal("KnobResized.png")))));
         EntityLoader loader = new EntityLoader();
-        Character character = new Character(touchpad, map, camera, loader.getEntities().get(0).animation);
+        Character character = new Character(touchpad, map, camera, loader.getEntities().get(0));
         character.setBounds(map.getProperties().get("spawnX", Integer.class) * 16, (40 - map.getProperties().get("spawnY", Integer.class)) * 16, 16, 16);
         Vector3 touchpadPos = camera.unproject(new Vector3(0, HEIGHT, 0));
         touchpad.setPosition(touchpadPos.x + 10, touchpadPos.y + 10);

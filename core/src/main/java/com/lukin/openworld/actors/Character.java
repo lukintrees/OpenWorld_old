@@ -26,13 +26,14 @@ public class Character extends Entity {
     private boolean centerCamera;
     private boolean direction;
     private float animationTime;
+    private float idleTime;
     private Texture hitboxTexture;
     private Texture hitboxTexture2;
 
 
     public Character(Touchpad touchpad, TiledMap map, OrthographicCamera camera, int[][][] animationTiles) {
         Pixmap pixmap = new Pixmap(16, 16, Pixmap.Format.RGBA8888);
-        hitbox = new Rectangle(0, 0, 16, 16);
+        hitbox = new Rectangle(0, 0, 16, 14);
         if (DEBUG) {
             tilesHitbox = new HashMap<>(25);
             pixmap.setColor(Color.RED);
@@ -45,6 +46,7 @@ public class Character extends Entity {
         pixmap.dispose();
         this.animation = loadAnimation(animationTiles, map.getTileSets(), 0.25f);
         this.animationTime = 0f;
+        this.idleTime = 0f;
         this.touchpad = touchpad;
         this.camera = camera;
         this.centerCamera = true;
@@ -75,11 +77,17 @@ public class Character extends Entity {
         float y = SPEED * delta * touchpad.getKnobPercentY();
         hitbox.setPosition(getX() + x, getY() + y);
         boolean skipMove = checkPosition(x, y);
-        if (!skipMove) {
-            moveBy(x, y);
-            touchpad.moveBy(x, y);
-            camera.translate(x, y);
-            direction = x < 0;
+        if (x != 0 || y != 0) {
+            if(!skipMove){
+                moveBy(x, y);
+                touchpad.moveBy(x, y);
+                camera.translate(x, y);
+                direction = x < 0;
+                idleTime = 0;
+            }
+        }else{
+            idleTime += delta;
+            animationTime = 0f;
         }
     }
 
